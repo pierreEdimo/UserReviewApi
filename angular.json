@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
-  "version": 1, 
+  "version": 1,
   "newProjectRoot": "projects",
   "projects": {
     "DocNearMe": {
@@ -123,6 +123,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "DocNearMe"
+    }
+  },
+  "defaultProject": "DocNearMe",
+  "cli": {
+    "analytics": "5e63afe4-c477-4327-b4f7-1adfa5cbd4d8"
+  }
 }
