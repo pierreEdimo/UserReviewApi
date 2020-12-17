@@ -17,10 +17,13 @@ namespace userVoice.Controllers
     public class ReviewsController : ControllerBase
     {
         private readonly DatabaseContext _context;
+        
 
         public ReviewsController(DatabaseContext context)
         {
             _context = context;
+
+            
 
             _context.Database.EnsureCreated();
         }
@@ -105,6 +108,7 @@ namespace userVoice.Controllers
 
 
             review.Body = reviewDTo.Body;
+            review.ReviewNote = reviewDTo.ReviewNote; 
 
             try
             {
@@ -136,7 +140,8 @@ namespace userVoice.Controllers
              
                 Body = reviewDTo.Body,
                 AuthorId = reviewDTo.AuthorId,
-                ItemId = reviewDTo.ItemId
+                ItemId = reviewDTo.ItemId, 
+                ReviewNote = reviewDTo.ReviewNote
             };
 
             _context.reviews.Add(review);
@@ -173,7 +178,8 @@ namespace userVoice.Controllers
             Body = review.Body,
             AuthorId = review.AuthorId,
             Item = review.Item,
-            Comments = review.Comments
+            Comments = review.Comments, 
+            ReviewNote = review.ReviewNote
         };
 
         private static ReviewDTo GetReviewToDTo(Review review) =>  new ReviewDTo{
@@ -183,7 +189,8 @@ namespace userVoice.Controllers
             AuthorId = review.AuthorId,
             Item = review.Item,
             numberOfComments = review.Comments.Count(), 
-            Comments = review.Comments
+            Comments = review.Comments, 
+            ReviewNote = review.ReviewNote
         };
     }
 }

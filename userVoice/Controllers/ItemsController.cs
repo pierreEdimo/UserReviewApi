@@ -186,24 +186,31 @@ namespace userVoice.Controllers
             Category = item.Category, 
             Reviews = item.Reviews, 
             Genre = item.Genre
-        }; 
+        };
 
-         private static ItemDTo GetItemToDTo(Item item) => new ItemDTo 
-        
+        private static ItemDTo GetItemToDTo(Item item)
         {
-            Id = item.Id,
-             ReleaseDate = item.ReleaseDate,
-             Publisher = item.Publisher,
-             CategoryId = item.CategoryId, 
-            Description = item.Description, 
-            Name = item.Name, 
-            ImageUrl = item.ImageUrl, 
-            EntryDate = item.EntryDate, 
-            Category = item.Category, 
-            Reviews = item.Reviews, 
-            Genre = item.Genre, 
-            numberOfReviews = item.Reviews.Count(), 
-        }; 
-       
+            var Note = 0; 
+            if(item.Reviews.Count() != 0 ) Note = item.Reviews.Sum(u => u.ReviewNote ) / item.Reviews.Count(); 
+         
+
+            return new ItemDTo
+
+            {
+                Id = item.Id,
+                ReleaseDate = item.ReleaseDate,
+                Publisher = item.Publisher,
+                CategoryId = item.CategoryId,
+                Description = item.Description,
+                Name = item.Name,
+                ImageUrl = item.ImageUrl,
+                EntryDate = item.EntryDate,
+                Category = item.Category,
+                Reviews = item.Reviews,
+                Genre = item.Genre,
+                numberOfReviews = item.Reviews.Count(),
+                Note = Note
+            };
+        }
     }
 }

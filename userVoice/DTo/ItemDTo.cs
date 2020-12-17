@@ -27,5 +27,6 @@ namespace userVoice.DTo
         public virtual List<Review> Reviews { get; set; }
         public int numberOfReviews { get; set;  }
         public String Genre { get; set;  }
+         public int Note{get; set; }
     }
 }

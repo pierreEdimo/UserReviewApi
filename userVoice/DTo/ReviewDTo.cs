@@ -20,5 +20,6 @@ namespace userVoice.DTo
         public int numberOfComments { get; set;  }
         [JsonConverter(typeof(OnlyDateConverter))]
         public DateTime EntryDate { get; set;  }
+        public int ReviewNote{get; set; }
     }
 }

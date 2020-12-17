@@ -18,5 +18,7 @@ namespace userVoice.Model
         public virtual List<Comment> Comments { get; set;  }
         [JsonConverter(typeof(OnlyDateConverter))]
         public DateTime EntryDate { get; set; } = DateTime.Now; 
+        public int ReviewNote{get; set; }
+       
     }
 }
