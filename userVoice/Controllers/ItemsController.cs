@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 using Microsoft.EntityFrameworkCore;
-using SQLitePCL;
 using userVoice.DBContext;
 using userVoice.DTo;
 using userVoice.Model;
