@@ -13,6 +13,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using userVoice.DBContext;
 using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
+using userVoice.Model;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Text;
 
 namespace userVoice
 {
@@ -34,6 +40,46 @@ namespace userVoice
             services.AddDbContext<DatabaseContext>(opt =>
                opt.UseInMemoryDatabase("UserCritiqs"));
 
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
+            services.AddIdentity<UserEntity, IdentityRole>(config =>
+            {
+                config.Password.RequireDigit = true;
+                config.Password.RequireLowercase = true; 
+                config.Password.RequiredLength = 6;
+                config.Password.RequireNonAlphanumeric = true;
+                config.User.RequireUniqueEmail = true;
+            })
+             .AddEntityFrameworkStores<DatabaseContext>()
+             .AddDefaultTokenProviders();
+
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+            services
+                .AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                 .AddJwtBearer(config =>
+                 {
+                     config.RequireHttpsMetadata = false;
+                     config.SaveToken = true;
+                     config.TokenValidationParameters = new TokenValidationParameters
+                     {
+                         ValidateIssuer = true,
+                         ValidateAudience = true,
+                         ValidateIssuerSigningKey = true,
+                         RequireExpirationTime = false,
+                         ValidIssuer = Configuration["JwtIssuer"],
+                         ValidAudience = Configuration["JwtIssuer"],
+                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtKey"])),
+                         ClockSkew = TimeSpan.Zero
+
+                     }; 
+                 }); 
+
+            
             services.AddCors(options => options.AddPolicy("EnableAll", builder =>
             {
                 builder.AllowAnyOrigin()
@@ -57,6 +103,8 @@ namespace userVoice
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseAuthentication(); 
 
             app.UseAuthorization();
 

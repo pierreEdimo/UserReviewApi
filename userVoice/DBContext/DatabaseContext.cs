@@ -5,10 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using userVoice.Model;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore; 
 
 namespace userVoice.DBContext
 {
-    public class DatabaseContext : DbContext
+    public class DatabaseContext : IdentityDbContext<UserEntity>
     {
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options) { }
 

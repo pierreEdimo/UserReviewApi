@@ -42,7 +42,11 @@ namespace userVoice.Controllers
                 reviewFromAuthor = new
                  {
                       href = Url.Link(nameof(ReviewsController.GetReviewFromAuthor), null )
-                 }
+                 }, 
+               allUsers = new
+               {
+                  href = Url.Link(nameof(UserController.GetAllUsers ), null)
+               }
                
 
             };
