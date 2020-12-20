@@ -44,7 +44,9 @@ namespace userVoice.Controllers
                 comments = comments.Where(p => p.ReviewId.ToString().Contains(queryParameter.reviewId.ToString())); 
             }
 
-            return await comments.Include(a => a.Review).Select(x => CommentToDTo(x)).ToListAsync(); 
+            return await comments.Include(a => a.Author)
+                                 .Include(a => a.Review)
+                                 .Select(x => CommentToDTo(x)).ToListAsync(); 
         }
 
         // GET: api/Comments/5
@@ -149,7 +151,8 @@ namespace userVoice.Controllers
             Body = comment.Body,
             EntryDate = comment.EntryDate,
             Review = comment.Review,
-            ReviewId = comment.ReviewId
+            ReviewId = comment.ReviewId, 
+            Author = comment.Author
         }; 
     }
 }
