@@ -16,6 +16,7 @@ namespace userVoice.DTo
         public virtual Review Review { get; set; }
         public string Body { get; set; }
         public string AuthorId { get; set; }
+        public virtual UserEntity Author { get; set;  }
         [JsonConverter(typeof(OnlyDateConverter))]
         public DateTime EntryDate { get; set; } = DateTime.Now;
        

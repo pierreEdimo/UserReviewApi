@@ -10,6 +10,6 @@ namespace userVoice.DTo
         public string UserName { get; set;  }
         public string passWord { get; set;  }
         public string Email { get; set;  }
-        public string photoUrl { get; set;  }
+     
     }
 }

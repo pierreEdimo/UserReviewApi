@@ -31,6 +31,14 @@ namespace userVoice.DBContext
 
             modelBuilder.Entity<Comment>().HasOne(a => a.Review).WithMany(a => a.Comments);
 
+            modelBuilder.Entity<UserEntity>().HasMany(a => a.getReviews).WithOne(a => a.Author);
+
+            modelBuilder.Entity<UserEntity>().HasMany(a => a.getComments).WithOne(a => a.Author);
+
+            modelBuilder.Entity<Review>().HasOne(a => a.Author).WithMany(a => a.getReviews).HasForeignKey(a => a.AuthorId);
+
+            modelBuilder.Entity<Comment>().HasOne(a => a.Author).WithMany(a => a.getComments).HasForeignKey(a => a.AuthorId); 
+
             modelBuilder.Seed(); 
        
         }

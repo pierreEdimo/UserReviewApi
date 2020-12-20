@@ -8,8 +8,11 @@ namespace userVoice.Model
 {
     public class UserEntity : IdentityUser
     {
-        public String adress { get; set;  }
-        public String photoUrl { get; set;  }
+        public String adress { get; set; }
+
+        public virtual List<Review> getReviews {get; set; }
+
+        public virtual List<Comment> getComments { get; set;  }
 
     }
 }

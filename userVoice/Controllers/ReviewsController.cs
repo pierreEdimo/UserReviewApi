@@ -48,7 +48,13 @@ namespace userVoice.Controllers
                 reviews = reviews.Where(p => p.ItemId.ToString().Contains(queryParameter.itemId.ToString()));
             }
 
-            return await reviews.Include(a => a.Item).Include(a => a.Comments).Select(x => GetReviewToDTo(x)).ToListAsync();
+            return await reviews.Include(a => a.Author)
+                                   .ThenInclude(a => a.getReviews)
+                                .Include(a => a.Author)
+                                   .ThenInclude(a => a.getComments)
+                                .Include(a => a.Item)
+                                .Include(a => a.Comments)
+                                .Select(x => GetReviewToDTo(x)).ToListAsync();
         }
 
         [HttpGet("[action]", Name = nameof(GetReviewFromAuthor))]
@@ -69,7 +75,13 @@ namespace userVoice.Controllers
                 reviews = reviews.Where(p => p.AuthorId.ToLower().Contains(queryParameter.authorId.ToLower()));
             }
 
-            return await reviews.Include(a => a.Item).Include(a => a.Comments).Select(x => GetReviewToDTo(x)).ToListAsync();
+            return await reviews.Include(a => a.Author)
+                                   .ThenInclude(a => a.getReviews)
+                                .Include(a => a.Author)
+                                   .ThenInclude(a => a.getComments)
+                                .Include(a => a.Item)
+                                .Include(a => a.Comments)
+                                .Select(x => GetReviewToDTo(x)).ToListAsync();
         }
 
         // GET: api/Reviews/5
@@ -78,7 +90,13 @@ namespace userVoice.Controllers
         {
             IQueryable<Review> reviews = _context.reviews;
 
-            var review = await reviews.Include(a => a.Item).Include(a => a.Comments).FirstOrDefaultAsync(x => x.Id == id);
+            var review = await reviews.Include(a => a.Author)
+                                         .ThenInclude(a => a.getReviews)
+                                      .Include(a => a.Author)
+                                         .ThenInclude(a => a.getComments)
+                                      .Include(a => a.Item)
+                                      .Include(a => a.Comments)
+                                      .FirstOrDefaultAsync(x => x.Id == id);
 
             if (review == null)
             {
@@ -179,6 +197,8 @@ namespace userVoice.Controllers
             AuthorId = review.AuthorId,
             Item = review.Item,
             Comments = review.Comments, 
+            Author = review.Author,
+            EntryDate = review.EntryDate, 
             ReviewNote = review.ReviewNote
         };
 
@@ -190,6 +210,8 @@ namespace userVoice.Controllers
             Item = review.Item,
             numberOfComments = review.Comments.Count(), 
             Comments = review.Comments, 
+            Author = review.Author, 
+            EntryDate = review.EntryDate, 
             ReviewNote = review.ReviewNote
         };
     }

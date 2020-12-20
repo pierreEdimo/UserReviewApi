@@ -13,13 +13,14 @@ namespace userVoice.DTo
     {
         public int Id { get; set; }
         public string AuthorId { get; set; }
+        public virtual UserEntity Author { get; set;  }
         public int ItemId { get; set; }
         public string Body { get; set; }
         public virtual Item Item { get; set;  }
         public virtual List<Comment> Comments { get; set; }
         public int numberOfComments { get; set;  }
         [JsonConverter(typeof(OnlyDateConverter))]
-        public DateTime EntryDate { get; set;  }
+        public DateTime EntryDate { get; set;  } = DateTime.Now;
         public int ReviewNote{get; set; }
     }
 }
