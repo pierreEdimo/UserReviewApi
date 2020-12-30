@@ -45,7 +45,12 @@ namespace userVoice.Controllers
                 items = items.Where(p => p.Name.ToLower().Contains(queryParameter.Name.ToLower())); 
             }
 
-            return await items.Include(a => a.Reviews).ThenInclude(a => a.Comments).Include( a => a.Category).Select(x => GetItemToDTo(x)).ToListAsync(); 
+            return await items.Include(a => a.Reviews)
+                                 .ThenInclude(a => a.Comments)
+                              .Include(a => a.Reviews)
+                                 .ThenInclude(a => a.Author)
+                              .Include( a => a.Category)
+                              .Select(x => GetItemToDTo(x)).ToListAsync(); 
         }
 
         [HttpGet( "[action]", Name = nameof(GetitemFromCategory))]
@@ -66,7 +71,12 @@ namespace userVoice.Controllers
                 items = items.Where(p => p.CategoryId.ToString().Contains(queryParameter.categoryId.ToString()));
             }
 
-            return await items.Include(a => a.Reviews).ThenInclude(a => a.Comments).Include(a => a.Category).Select(x => GetItemToDTo(x)).ToListAsync();
+            return await items.Include(a => a.Reviews)
+                                .ThenInclude(a => a.Comments)
+                              .Include(a => a.Reviews)
+                                .ThenInclude(a => a.Author)
+                              .Include(a => a.Category)
+                              .Select(x => GetItemToDTo(x)).ToListAsync();
         }
 
         // GET: api/Items/5
