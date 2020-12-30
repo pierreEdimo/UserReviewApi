@@ -59,6 +59,7 @@ namespace userVoice.Controllers
             {
                 return await _userManager.Users.Include(a => a.getComments)
                                                .Include(a => a.getReviews)
+                                                 .ThenInclude(a => a.Author)
                                                .ToListAsync();
             }
         }
