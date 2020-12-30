@@ -47,6 +47,7 @@ namespace userVoice.Controllers
         {
             var email = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
             var user = await _userManager.Users.Include(a => a.getReviews)
+                                                  .ThenInclude(a => a.Author)
                                                .Include(a => a.getComments)
                                                .SingleOrDefaultAsync(x => x.Email == email); 
             return user;
