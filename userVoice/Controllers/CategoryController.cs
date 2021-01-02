@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using userVoice.DBContext;
 using userVoice.DTo;
 using userVoice.Model;
+using userVoice.Queryclasses;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -26,9 +27,18 @@ namespace userVoice.Controllers
         }
         // GET: api/<CategoryController>
         [HttpGet(Name = nameof(GetAllCategories))]
-        public async  Task<ActionResult<IEnumerable<CategoryDTo>>> GetAllCategories()
+        public async  Task<ActionResult<IEnumerable<CategoryDTo>>> GetAllCategories([FromQuery] UserQueryParameter queryParameter)
         {
-            IQueryable<Category> categories = _context.categories; 
+            IQueryable<Category> categories = _context.categories;
+
+            if (!string.IsNullOrEmpty(queryParameter.sortBy))
+            {
+                if (typeof(Category).GetProperty(queryParameter.sortBy) != null)
+                {
+                    categories = categories.OrderByCustom(queryParameter.sortBy, queryParameter.SortOrder);
+                }
+            }
+
 
             return await categories.Include(a => a.Items).ThenInclude(a => a.Reviews).Select(x => GetCategoryToDTo(x)).ToListAsync(); 
         }
