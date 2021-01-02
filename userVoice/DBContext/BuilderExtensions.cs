@@ -32,6 +32,28 @@ namespace userVoice.DBContext
               }, 
               new Item
               {
+                  Id = 2,
+                  CategoryId = 1,
+                  Name = "God pf war",
+                  Description = "**God of war** is an action-adventure game developed by Santa Monica Studio and published by Sony Interactive Entertainment (SIE). Released worldwide on April 20, 2018, for the PlayStation 4 (PS4)," +
+                                " it is the eighth installment in the God of War series, the eighth chronologically, and the sequel to 2010's God of War III. Unlike previous games, which were loosely based on Greek mythology, this installment is" +
+                                " rooted in Norse mythology, with the majority of it set in ancient Scandinavia in the realm of Midgard. For the first time in the series, there are two protagonists: Kratos, the former Greek God of War who remains the" +
+                                " only playable character, and his young son Atreus. Following the death of Kratos' second wife and Atreus' mother, they journey to fulfill her request that her ashes be spread at the highest peak of the nine realms. " +
+                                "Kratos keeps his troubled past a secret from Atreus, who is unaware of his divine nature. Along their journey, they encounter monsters and gods of the Norse world " +
+                                 "\n" +
+                                 "\n" +
+                                 "\n" +
+                                 "Described by creative director Cory Barlog as a reimagining of the franchise, a major gameplay change is that Kratos makes prominent use of a magical battle axe instead of his signature double-chained blades. " +
+                                 "God of War also uses an over-the-shoulder free camera, with the game in one shot, as opposed to the fixed cinematic camera of the previous entries. It was the first 3D AAA game to use a one-shot camera. The game" +
+                                 " also includes role-playing video game elements, and Kratos' son Atreus provides assistance in combat. The majority of the original game's development team worked on God of War and designed it to be accessible and " +
+                                 "grounded. A separate short text-based game, A Call from the Wilds, was released in February 2018 and follows Atreus on his first adventure",
+                  Publisher = "	Sony Interactive Entertainment",
+                  ImageUrl = "https://images.hdqwalls.com/wallpapers/god-of-war-uhd-4k-2g.jpg",
+                  Genre = "Action-adventure",
+                  ReleaseDate = new DateTime(2018, 04, 20)
+              },
+              new Item
+              {
                   Id = 3,
                   CategoryId = 1,
                   Name = "shadow of the Tomb Raider",
@@ -42,16 +64,11 @@ namespace userVoice.DBContext
                                  "\n" +
                                  "\n" +
                                  "Set shortly after the events of Rise of the Tomb Raider, its story follows Lara Croft as she ventures through the tropical regions of the Americas to the legendary city Paititi, battling the paramilitary " +
-                                 "organization Trinity and racing to stop a Mayan apocalypse she has unleashed. Lara must traverse the environment and combat enemies with firearms and stealth as she explores semi-open hubs. In these hubs she" +
-                                 " can raid challenge tombs to unlock new rewards, complete side missions, and scavenge for resources which can be used to craft useful materials",
-                  Publisher = "Square Enix",
-                  ImageUrl = "https://images.hdqwalls.com/wallpapers/god-of-war-uhd-4k-2g.jpg",
-                  Genre = "Action-adventure",
+                                 "organization Trinity and racing to stop a Mayan apocalypse she has unleashed. Lara must traverse the environment and combat enemies with firearms and stealth as she explores semi-open hubs. In these hubs she can raid challenge tombs to unlock new rewards, complete side missions, and scavenge for resources which can be used to craft useful materials",
+                  Publisher = "Square enix",
+                  ImageUrl = "https://images.hdqwalls.com/wallpapers/2019-shadow-of-the-tomb-raider-lara-croft-4k-b9.jpg",
+                  Genre = "Action-adventure game",
                   ReleaseDate = new DateTime(2018, 09, 14)
-              },
-              new Item
-              {
-
               }
              ); 
         }
