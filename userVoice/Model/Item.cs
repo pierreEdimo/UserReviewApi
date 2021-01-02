@@ -23,7 +23,7 @@ namespace userVoice.Model
         public DateTime ReleaseDate { get; set;  }
         public virtual List<Review> Reviews { get; set;  }
         public String Genre { get; set;  }
-        public int Note{get; set; }
+      
       
     }
 }
