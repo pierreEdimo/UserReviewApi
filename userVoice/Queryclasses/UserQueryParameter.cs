@@ -17,6 +17,6 @@ namespace userVoice.Queryclasses
 
         public int reviewId { get; set;  }
 
-        public int note { get; set;  }
+        public int Note { get; set;  }
     }
 }
