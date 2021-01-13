@@ -7,6 +7,7 @@ namespace userVoice.Model
 {
     public class SearchWord
     {
+        public String userId { get; set;  }
         public int Id { get; set;  }
         public String KeyWord { get; set;  }
     }

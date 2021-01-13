@@ -7,6 +7,7 @@ namespace userVoice.DTo
 {
     public class SearchWordDTo
     {
+        public String userId { get; set;  }
         public int Id { get; set; }
         public String KeyWord { get; set; }
     }

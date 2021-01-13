@@ -39,6 +39,11 @@ namespace userVoice.Controllers
                 }
             }
 
+            if (!string.IsNullOrEmpty(queryParameters.userId ))
+            {
+                searchWords = searchWords.Where(p => p.userId.Contains(queryParameters.userId));
+            }
+
             return await searchWords.Select(x => searchWordToDTo(x)).ToListAsync();
         }
 
@@ -65,7 +70,8 @@ namespace userVoice.Controllers
         {
             var searchWord = new SearchWord
             {
-                KeyWord = searchWordDTo.KeyWord
+                KeyWord = searchWordDTo.KeyWord, 
+                userId = searchWordDTo.userId
             };
 
 
@@ -95,7 +101,8 @@ namespace userVoice.Controllers
         public static SearchWordDTo searchWordToDTo(SearchWord searchWord) => new SearchWordDTo
         {
             Id = searchWord.Id,
-            KeyWord = searchWord.KeyWord
+            KeyWord = searchWord.KeyWord,
+            userId = searchWord.userId
         };
     }
 }
