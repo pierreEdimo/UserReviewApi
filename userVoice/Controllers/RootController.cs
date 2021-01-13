@@ -46,6 +46,10 @@ namespace userVoice.Controllers
                allUsers = new
                {
                   href = Url.Link(nameof(UserController.GetAllUsers ), null)
+               }, 
+               searchWords = new
+               {
+                   href = Url.Link(nameof(SearchWordsController.GetSearchWords), null )
                }
                
 
