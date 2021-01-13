@@ -48,6 +48,7 @@ namespace userVoice.DBContext
         public DbSet<Category> categories { get; set;  }
         public DbSet<Review> reviews { get; set;  }
         public DbSet<Comment> comments { get; set;  }
+        public DbSet<SearchWord> searchWords { get; set;  }
       
     }
 }

@@ -49,6 +49,7 @@ namespace userVoice.Controllers
             var user = await _userManager.Users.Include(a => a.getReviews)
                                                   .ThenInclude(a => a.Author)
                                                .SingleOrDefaultAsync(x => x.Email == email); 
+      
             return user;
         }
 
