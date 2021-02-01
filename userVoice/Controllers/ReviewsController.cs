@@ -48,17 +48,41 @@ namespace userVoice.Controllers
             }
 
 
-            if (!string.IsNullOrEmpty(queryParameter.authorId.ToLower()))
-            {
-                reviews = reviews.Where(p => p.AuthorId.ToLower().Contains(queryParameter.authorId.ToLower()));
-            }
-
             return await reviews.Include(a => a.Author)
                                  .ThenInclude(a => a.getReviews)
                                 .Include(a => a.Item)         
                                 .Select(x => reviewToDTo(x)).ToListAsync();
 
         }
+
+        [HttpGet("[action]", Name = nameof(GetreviewFromAuthor))]
+        public async Task<ActionResult<IEnumerable<ReviewDTo>>> GetreviewFromAuthor([FromQuery] UserQueryParameter queryParameter)
+        {
+            IQueryable<Review> reviews = _context.reviews;
+
+            if (!string.IsNullOrEmpty(queryParameter.sortBy))
+            {
+                if (typeof(Review).GetProperty(queryParameter.sortBy) != null)
+                {
+                    reviews = reviews.OrderByCustom(queryParameter.sortBy, queryParameter.SortOrder);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(queryParameter.authorId.ToLower()))
+            {
+                reviews = reviews.Where(p => p.AuthorId.ToLower().Contains(queryParameter.authorId.ToLower()));
+            }
+
+
+
+            return await reviews.Include(a => a.Author)
+                                 .ThenInclude(a => a.getReviews)
+                                .Include(a => a.Item)
+                                .Select(x => reviewToDTo(x)).ToListAsync();
+
+        }
+
+
 
         // GET: api/Reviews/5
         [HttpGet("{id}")]

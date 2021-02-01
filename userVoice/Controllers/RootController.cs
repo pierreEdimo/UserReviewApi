@@ -44,6 +44,10 @@ namespace userVoice.Controllers
                reviews = new
                {
                    href = Url.Link(nameof(ReviewsController.Getreviews),null )
+               }, 
+               reviewFromAuthor = new
+               {
+                   href = Url.Link(nameof(ReviewsController.GetreviewFromAuthor), null )
                }
                
 
