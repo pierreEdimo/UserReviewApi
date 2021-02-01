@@ -48,9 +48,9 @@ namespace userVoice.Controllers
             }
 
 
-            if (!string.IsNullOrEmpty(queryParameter.authorId))
+            if (!string.IsNullOrEmpty(queryParameter.authorId.ToLower()))
             {
-                reviews = reviews.Where(p => p.AuthorId.Contains(queryParameter.authorId));
+                reviews = reviews.Where(p => p.AuthorId.ToLower().Contains(queryParameter.authorId.ToLower()));
             }
 
             return await reviews.Include(a => a.Author)

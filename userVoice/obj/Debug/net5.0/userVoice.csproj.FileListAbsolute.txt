@@ -158,3 +158,4 @@ C:\Users\pierre\source\repos\userCritiqs\userVoice\userVoice\obj\Debug\net5.0\us
 C:\Users\pierre\source\repos\userCritiqs\userVoice\userVoice\obj\Debug\net5.0\ref\userVoice.dll
 C:\Users\pierre\source\repos\userCritiqs\userVoice\userVoice\obj\Debug\net5.0\userVoice.pdb
 C:\Users\pierre\source\repos\userCritiqs\userVoice\userVoice\obj\Debug\net5.0\userVoice.genruntimeconfig.cache
+C:\Users\pierre\source\repos\userCritiqs\userVoice\userVoice\bin\Debug\net5.0\System.Diagnostics.DiagnosticSource.dll
