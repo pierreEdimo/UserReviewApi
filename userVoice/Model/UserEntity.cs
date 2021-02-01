@@ -12,7 +12,6 @@ namespace userVoice.Model
 
         public virtual List<Review> getReviews {get; set; }
 
-        public virtual List<Comment> getComments { get; set;  }
 
     }
 }

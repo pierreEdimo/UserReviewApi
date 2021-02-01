@@ -27,22 +27,12 @@ namespace userVoice.Controllers
                 {
                     href=Url.Link(nameof(CategoryController.GetAllCategories), null )
                 }, 
-                reviews = new
-                {
-                    href = Url.Link(nameof(ReviewsController.Getreviews), null)
-                }, 
-                comments = new
-                {
-                    href= Url.Link(nameof(CommentsController.Getcomments), null)
-                },
+             
                 itemFromCategory = new
                 {
                     href = Url.Link(nameof(ItemsController.GetitemFromCategory),null)
                 }, 
-                reviewFromAuthor = new
-                 {
-                      href = Url.Link(nameof(ReviewsController.GetReviewFromAuthor), null )
-                 }, 
+        
                allUsers = new
                {
                   href = Url.Link(nameof(UserController.GetAllUsers ), null)
@@ -50,6 +40,10 @@ namespace userVoice.Controllers
                searchWords = new
                {
                    href = Url.Link(nameof(SearchWordsController.GetSearchWords), null )
+               }, 
+               reviews = new
+               {
+                   href = Url.Link(nameof(ReviewsController.Getreviews),null )
                }
                
 

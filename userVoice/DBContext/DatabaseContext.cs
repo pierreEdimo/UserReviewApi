@@ -25,19 +25,13 @@ namespace userVoice.DBContext
 
             modelBuilder.Entity<Item>().HasMany(a => a.Reviews).WithOne(a => a.Item).HasForeignKey(a => a.ItemId);
 
-            modelBuilder.Entity<Review>().HasOne(a => a.Item).WithMany(a => a.Reviews);
-
-            modelBuilder.Entity<Review>().HasMany(a => a.Comments).WithOne(a => a.Review).HasForeignKey(a => a.ReviewId);
-
-            modelBuilder.Entity<Comment>().HasOne(a => a.Review).WithMany(a => a.Comments);
-
             modelBuilder.Entity<UserEntity>().HasMany(a => a.getReviews).WithOne(a => a.Author);
 
-            modelBuilder.Entity<UserEntity>().HasMany(a => a.getComments).WithOne(a => a.Author);
+            modelBuilder.Entity<Review>().HasKey( a => new { a.ItemId, a.AuthorId } ); 
 
             modelBuilder.Entity<Review>().HasOne(a => a.Author).WithMany(a => a.getReviews).HasForeignKey(a => a.AuthorId);
 
-            modelBuilder.Entity<Comment>().HasOne(a => a.Author).WithMany(a => a.getComments).HasForeignKey(a => a.AuthorId); 
+            modelBuilder.Entity<Review>().HasOne(a => a.Item).WithMany(a => a.Reviews).HasForeignKey(a => a.ItemId);
 
             modelBuilder.Seed(); 
        
@@ -47,7 +41,6 @@ namespace userVoice.DBContext
         public DbSet<Item> items { get; set; }
         public DbSet<Category> categories { get; set;  }
         public DbSet<Review> reviews { get; set;  }
-        public DbSet<Comment> comments { get; set;  }
         public DbSet<SearchWord> searchWords { get; set;  }
       
     }

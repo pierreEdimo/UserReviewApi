@@ -25,9 +25,7 @@ namespace userVoice.DBContext
                                       "The game is the third entry in the Red Dead series and is a prequel to the 2010 game Red Dead Redemption. The story is set in 1899 in a fictionalized representation of the Western, " +
                                       "Midwestern, and Southern United States and follows outlaw Arthur Morgan, a member of the Van der Linde gang. Arthur must deal with the decline of the Wild West whilst " +
                                       "attempting to survive against government forces, rival gangs, and other adversaries. The story also follows fellow gang member John Marston, the protagonist of Red Dead Redemption.",
-                        Publisher="Rockstar Games",
                         ImageUrl= "https://hdqwalls.com/download/red-dead-redemption-2-62-1125x2436.jpg", 
-                        Genre="Action-adventure game",
                         ReleaseDate= new DateTime(2018, 10, 26)
               }, 
               new Item
@@ -47,9 +45,7 @@ namespace userVoice.DBContext
                                  "God of War also uses an over-the-shoulder free camera, with the game in one shot, as opposed to the fixed cinematic camera of the previous entries. It was the first 3D AAA game to use a one-shot camera. The game" +
                                  " also includes role-playing video game elements, and Kratos' son Atreus provides assistance in combat. The majority of the original game's development team worked on God of War and designed it to be accessible and " +
                                  "grounded. A separate short text-based game, A Call from the Wilds, was released in February 2018 and follows Atreus on his first adventure",
-                  Publisher = "	Sony Interactive Entertainment",
                   ImageUrl = "https://images.hdqwalls.com/wallpapers/god-of-war-uhd-4k-2g.jpg",
-                  Genre = "Action-adventure",
                   ReleaseDate = new DateTime(2018, 04, 20)
               },
               new Item
@@ -65,9 +61,7 @@ namespace userVoice.DBContext
                                  "\n" +
                                  "Set shortly after the events of Rise of the Tomb Raider, its story follows Lara Croft as she ventures through the tropical regions of the Americas to the legendary city Paititi, battling the paramilitary " +
                                  "organization Trinity and racing to stop a Mayan apocalypse she has unleashed. Lara must traverse the environment and combat enemies with firearms and stealth as she explores semi-open hubs. In these hubs she can raid challenge tombs to unlock new rewards, complete side missions, and scavenge for resources which can be used to craft useful materials",
-                  Publisher = "Square enix",
                   ImageUrl = "https://images.hdqwalls.com/wallpapers/2019-shadow-of-the-tomb-raider-lara-croft-4k-b9.jpg",
-                  Genre = "Action-adventure game",
                   ReleaseDate = new DateTime(2018, 09, 14)
               }
              ); 

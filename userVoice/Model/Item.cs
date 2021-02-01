@@ -18,11 +18,10 @@ namespace userVoice.Model
         public DateTime EntryDate { get; set; } = DateTime.Now; 
         public int CategoryId { get; set;  }
         public virtual Category Category { get; set;  }
-        public String Publisher { get; set;  }
         [JsonConverter(typeof(OnlyDateConverter))]
         public DateTime ReleaseDate { get; set;  }
         public virtual List<Review> Reviews { get; set;  }
-        public String Genre { get; set;  }
+     
       
       
     }

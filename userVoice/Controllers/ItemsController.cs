@@ -46,7 +46,6 @@ namespace userVoice.Controllers
             }
 
             return await items.Include(a => a.Reviews)
-                                 .ThenInclude(a => a.Comments)
                               .Include(a => a.Reviews)
                                  .ThenInclude(a => a.Author)
                               .Include( a => a.Category)
@@ -72,7 +71,6 @@ namespace userVoice.Controllers
             }
 
             return await items.Include(a => a.Reviews)
-                                .ThenInclude(a => a.Comments)
                               .Include(a => a.Reviews)
                                 .ThenInclude(a => a.Author)
                               .Include(a => a.Category)
@@ -85,7 +83,7 @@ namespace userVoice.Controllers
         {
             IQueryable<Item> items = _context.items;
 
-            var item = await items.Include(a => a.Reviews).ThenInclude(a => a.Comments).Include(a => a.Category).FirstOrDefaultAsync(x => x.Id == id);
+            var item = await items.Include(a => a.Reviews).Include(a => a.Category).FirstOrDefaultAsync(x => x.Id == id);
 
             if (item == null)
             {
@@ -149,9 +147,7 @@ namespace userVoice.Controllers
                 Description = itemDTo.Description,
                 ImageUrl = itemDTo.ImageUrl,
                 CategoryId = itemDTo.CategoryId, 
-                ReleaseDate = itemDTo.ReleaseDate, 
-                Publisher = itemDTo.Publisher, 
-                Genre = itemDTo.Genre
+                ReleaseDate = itemDTo.ReleaseDate,         
             }; 
 
             _context.items.Add(item);
@@ -186,7 +182,6 @@ namespace userVoice.Controllers
         {
             Id = item.Id, 
             ReleaseDate = item.ReleaseDate, 
-            Publisher = item.Publisher, 
             CategoryId = item.CategoryId, 
             Description = item.Description, 
             Name = item.Name, 
@@ -194,7 +189,6 @@ namespace userVoice.Controllers
             EntryDate = item.EntryDate, 
             Category = item.Category, 
             Reviews = item.Reviews, 
-            Genre = item.Genre
         };
 
         private static ItemDTo GetItemToDTo(Item item)
@@ -208,7 +202,6 @@ namespace userVoice.Controllers
             {
                 Id = item.Id,
                 ReleaseDate = item.ReleaseDate,
-                Publisher = item.Publisher,
                 CategoryId = item.CategoryId,
                 Description = item.Description,
                 Name = item.Name,
@@ -216,7 +209,6 @@ namespace userVoice.Controllers
                 EntryDate = item.EntryDate,
                 Category = item.Category,
                 Reviews = item.Reviews,
-                Genre = item.Genre,
                 numberOfReviews = item.Reviews.Count(),
                 Note = Note
             };

@@ -21,12 +21,10 @@ namespace userVoice.DTo
         public DateTime EntryDate { get; set; } = DateTime.Now;
         public int CategoryId { get; set; }
         public virtual Category Category { get; set;  }
-        public String Publisher { get; set; }
         [JsonConverter(typeof(OnlyDateConverter))]
         public DateTime ReleaseDate { get; set; }
         public virtual List<Review> Reviews { get; set; }
         public int numberOfReviews { get; set;  }
-        public String Genre { get; set;  }
-         public int Note{get; set; }
+        public int Note{get; set; }
     }
 }
