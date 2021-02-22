@@ -1,24 +1,24 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+
 using userVoice.DBContext;
-using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
+
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using userVoice.Model;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
+using userVoice.Services;
+
+
 
 namespace userVoice
 {
@@ -34,11 +34,18 @@ namespace userVoice
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers().AddNewtonsoftJson(options => 
-                                                        options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore );
+            services.AddControllers().AddNewtonsoftJson();
+
+           
 
             services.AddDbContext<DatabaseContext>(opt =>
-               opt.UseInMemoryDatabase("UserCritiqs"));
+               opt.UseSqlite("Data Source=UserReviewDb"));
+
+            services.AddTransient<IFileStorageService, InAppStorageService>();
+
+            services.AddHttpContextAccessor(); 
+
+            services.AddAutoMapper(typeof(Startup));  
 
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
@@ -85,14 +92,40 @@ namespace userVoice
                 builder.AllowAnyOrigin()
                        .AllowAnyHeader()
                        .AllowAnyMethod();
-            })); 
+            }));
 
-            
+            services.AddSwaggerDocument( config => {
+                config.PostProcess = document =>
+                {
+                    document.Info.Version = "v1";
+                    document.Info.Title = "UserReviewApi";
+                    document.Info.Description = "a user centered review-aggregator"; 
+                    document.Info.TermsOfService = "None";
+                    document.Info.Contact = new NSwag.OpenApiContact
+                    {
+                        Name = "Pierre Edimo",
+                        Email = "pierreedimo@live.com"
+                    };
+                    document.Info.License = new NSwag.OpenApiLicense
+                    {
+                        Name = "MIT"
+                    }; 
+                }; 
+            }); 
+
+         
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DatabaseContext context )
         {
+           
+            context.Database.EnsureCreated();
+
+           
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -101,6 +134,12 @@ namespace userVoice
             app.UseCors("EnableAll"); 
 
             app.UseHttpsRedirection();
+
+            app.UseStaticFiles();
+
+            app.UseOpenApi();
+
+            app.UseSwaggerUi3(); 
 
             app.UseRouting();
 
