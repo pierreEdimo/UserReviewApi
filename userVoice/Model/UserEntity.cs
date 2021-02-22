@@ -8,9 +8,7 @@ namespace userVoice.Model
 {
     public class UserEntity : IdentityUser
     {
-        public String adress { get; set; }
-
-        public virtual List<Review> getReviews {get; set; }
+    
 
 
     }
