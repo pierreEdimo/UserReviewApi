@@ -2,24 +2,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using userVoice.Helper;
 using userVoice.Model;
-using userVoice.OnlyDate;
 
 namespace userVoice.DTo
 {
-    public class ReviewDTo
+    public class ReviewDTO
     {
-  
-        public string AuthorId { get; set; }
-        public virtual UserEntity Author { get; set;  }
-        public int ItemId { get; set; }
-        public string Body { get; set; }
-        public virtual Item Item { get; set;  }
-   
-        [JsonConverter(typeof(OnlyDateConverter))]
-        public DateTime EntryDate { get; set;  } = DateTime.Now;
-        public int ReviewNote{get; set; }
+        public String AuthorId { get; set;  }
+        public double Rate { get; set;  }
+        public String Content { get; set;  }
+        [JsonIgnore]
+        public ItemDTO Item { get; set;  }
+        public UserEntity Author { get; set;  }
+        [JsonConverter(typeof(DateConverter) )]
+        public DateTime CreatedAt { get; set; } = DateTime.Now; 
     }
 }
