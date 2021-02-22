@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using userVoice.DBContext;
-using userVoice.DTo;
 using userVoice.Model;
-using userVoice.Queryclasses;
+using AutoMapper;
+using userVoice.DTo; 
 
 namespace userVoice.Controllers
 {
@@ -17,130 +17,81 @@ namespace userVoice.Controllers
     public class ReviewsController : ControllerBase
     {
         private readonly DatabaseContext _context;
-        private IQueryable<Review> reviews; 
+        private readonly IMapper _mapper; 
 
-        public ReviewsController(DatabaseContext context)
+        public ReviewsController(DatabaseContext context, 
+                                 IMapper mapper  )
         {
             _context = context;
-
-            _context.Database.EnsureCreated();
-
-           reviews = _context.reviews;
+            _mapper = mapper; 
         }
 
         // GET: api/Reviews
-        [HttpGet(Name = nameof(Getreviews)) ]
-        public async Task<ActionResult<IEnumerable<ReviewDTo>>> Getreviews([FromQuery] UserQueryParameter queryParameter)
+        [HttpGet]
+        public async Task<ActionResult<List<ReviewDTO>>> GetReviews()
         {
-            
+          var reviews = await _context.Reviews.OrderByDescending( x => x.ItemId)
+                                              .Include(x => x.Author)
+                                              .ToListAsync();
 
-            if (!string.IsNullOrEmpty(queryParameter.sortBy))
-            {
-                if (typeof(Review).GetProperty(queryParameter.sortBy) != null)
-                {
-                    reviews = reviews.OrderByCustom(queryParameter.sortBy, queryParameter.SortOrder);
-                }
-            }
-
-            if (!string.IsNullOrEmpty(queryParameter.itemId.ToString()))
-            {
-                reviews = reviews.Where(p => p.ItemId.ToString().Contains(queryParameter.itemId.ToString()));
-            }
-
-
-            return await reviews.Include(a => a.Author)
-                                 .ThenInclude(a => a.getReviews)
-                                .Include(a => a.Item)         
-                                .Select(x => reviewToDTo(x)).ToListAsync();
-
+            return _mapper.Map<List<ReviewDTO>>(reviews); 
         }
-
-        [HttpGet("[action]", Name = nameof(GetreviewFromAuthor))]
-        public async Task<ActionResult<IEnumerable<ReviewDTo>>> GetreviewFromAuthor([FromQuery] UserQueryParameter queryParameter)
-        {
-            IQueryable<Review> reviews = _context.reviews;
-
-            if (!string.IsNullOrEmpty(queryParameter.sortBy))
-            {
-                if (typeof(Review).GetProperty(queryParameter.sortBy) != null)
-                {
-                    reviews = reviews.OrderByCustom(queryParameter.sortBy, queryParameter.SortOrder);
-                }
-            }
-
-            if (!string.IsNullOrEmpty(queryParameter.authorId.ToLower()))
-            {
-                reviews = reviews.Where(p => p.AuthorId.ToLower().Contains(queryParameter.authorId.ToLower()));
-            }
-
-
-
-            return await reviews.Include(a => a.Author)
-                                 .ThenInclude(a => a.getReviews)
-                                .Include(a => a.Item)
-                                .Select(x => reviewToDTo(x)).ToListAsync();
-
-        }
-
-
 
         // GET: api/Reviews/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ReviewDTo>> GetReview(String id)
+        public async Task<ActionResult<ReviewDTO>> GetReview(string Id)
         {
-           
-
-            var review = await reviews.Include(a => a.Author)
-                                        .ThenInclude(a => a.getReviews)
-                                      .Include(a => a.Item)
-                                      .FirstOrDefaultAsync(x => x.AuthorId == id); 
+            var review = await _context.Reviews.OrderByDescending(x => x.ItemId)
+                                               .Include(x => x.Author)
+                                               .FirstOrDefaultAsync( x => x.AuthorId == Id );
 
             if (review == null)
             {
                 return NotFound();
             }
 
-            return reviewToDTo(review);
+            var reviewDTO = _mapper.Map<ReviewDTO>(review); 
+
+            return reviewDTO;
+        }
+
+        [HttpGet("Filter")]
+        public async Task<ActionResult<List<ReviewDTO>>> FilterReviews([FromQuery] FilterDTO filter)
+        {
+            var queryable = _context.Reviews.AsQueryable();
+
+            if (!String.IsNullOrWhiteSpace(filter.AuthorId))
+            {
+                queryable = queryable.Where(x => x.AuthorId.Contains(filter.AuthorId)); 
+            }
+
+            if(filter.ItemId != 0)
+            {
+                queryable = queryable.Where(x => x.ItemId.ToString().Contains(filter.ItemId.ToString())); 
+            }
+
+            var items = await queryable.Include(x => x.Author)
+                                       .OrderByDescending(x => x.ItemId)
+                                       .ToListAsync();
+
+            return _mapper.Map<List<ReviewDTO>>(items); 
         }
 
         // PUT: api/Reviews/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutReview(String id, ReviewDTo reviewDTo)
+        public async Task<IActionResult> PutReview(string Id, AddReviewDTO addReview)
         {
-         
+            var reviewDB = await _context.Reviews.FirstOrDefaultAsync(x => x.AuthorId == Id); 
 
-            if (id != reviewDTo.AuthorId)
-            {
-                return BadRequest();
-            }
-
-            var review = await reviews.FirstOrDefaultAsync(x => x.AuthorId == id) ; 
-
-            if(review == null)
+            if(reviewDB == null)
             {
                 return NotFound(); 
             }
 
-            review.Body = reviewDTo.Body;
-            review.ReviewNote = reviewDTo.ReviewNote; 
+            reviewDB = _mapper.Map(addReview, reviewDB);
 
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ReviewExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _context.SaveChangesAsync(); 
 
             return NoContent();
         }
@@ -148,17 +99,12 @@ namespace userVoice.Controllers
         // POST: api/Reviews
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<ReviewDTo>> PostReview(ReviewDTo reviewDTO)
+        public async Task<ActionResult> PostReview(AddReviewDTO addReview)
         {
-            var review = new Review
-            {
-                Body = reviewDTO.Body,
-                AuthorId = reviewDTO.AuthorId,
-                ItemId = reviewDTO.ItemId,
-                ReviewNote = reviewDTO.ReviewNote
-            }; 
+            var review = _mapper.Map<Review>(addReview);
 
-            _context.reviews.Add(review);
+            _context.Add(review); 
+            
             try
             {
                 await _context.SaveChangesAsync();
@@ -175,47 +121,32 @@ namespace userVoice.Controllers
                 }
             }
 
-            return CreatedAtAction( nameof(GetReview) , new { id = review.AuthorId }, createReviewDTO(review) );
+            var reviewDTO = _mapper.Map<ReviewDTO>(review); 
+
+            return CreatedAtAction("GetReview", new { id = reviewDTO.AuthorId }, reviewDTO);
         }
 
         // DELETE: api/Reviews/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteReview(String id)
+        public async Task<IActionResult> DeleteReview(string Id)
         {
-            var review = await reviews.FirstOrDefaultAsync(x => x.AuthorId == id);
-            if (review == null)
+            var exists = _context.Reviews.AnyAsync(x => x.AuthorId == Id); 
+
+            if( !await exists)
             {
-                return NotFound();
+                return NotFound(); 
             }
 
-            _context.reviews.Remove(review);
-            await _context.SaveChangesAsync();
+            _context.Remove(new Review() { AuthorId = Id });
+
+            await _context.SaveChangesAsync(); 
 
             return NoContent();
         }
 
-        private bool ReviewExists(String id)
+        private bool ReviewExists(string id)
         {
-            return _context.reviews.Any(e => e.AuthorId == id);
+            return _context.Reviews.Any(e => e.AuthorId == id);
         }
-
-        private static ReviewDTo createReviewDTO(Review review) => new ReviewDTo
-        {
-            Body = review.Body,
-            AuthorId = review.AuthorId,
-            ItemId = review.ItemId,
-            ReviewNote = review.ReviewNote
-        };
-
-        private static ReviewDTo reviewToDTo(Review review) => new ReviewDTo
-        {
-            AuthorId = review.AuthorId, 
-            Author = review.Author, 
-            Body = review.Body, 
-            Item = review.Item, 
-            EntryDate = review.EntryDate, 
-            ReviewNote = review.ReviewNote, 
-            ItemId = review.ItemId
-        }; 
     }
 }

@@ -4,12 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-
 using Microsoft.EntityFrameworkCore;
 using userVoice.DBContext;
-using userVoice.DTo;
 using userVoice.Model;
-using userVoice.Queryclasses;
+using AutoMapper;
+using userVoice.DTo;
+using System.IO;
+using userVoice.Services; 
 
 namespace userVoice.Controllers
 {
@@ -18,200 +19,173 @@ namespace userVoice.Controllers
     public class ItemsController : ControllerBase
     {
         private readonly DatabaseContext _context;
+        private readonly IMapper _mapper;
+        private readonly IFileStorageService _storageService;
+        private String containerName = "Items"; 
 
-        public ItemsController(DatabaseContext context)
+        public ItemsController(DatabaseContext context,
+                               IFileStorageService storageService,
+                                IMapper mapper )
         {
             _context = context;
+            _mapper = mapper;
+            _storageService = storageService; 
 
-            _context.Database.EnsureCreated();
         }
 
         // GET: api/Items
-        [HttpGet(Name = nameof(Getitems))]
-        public async Task<ActionResult<IEnumerable<ItemDTo>>> Getitems([FromQuery] UserQueryParameter queryParameter )
+        [HttpGet]
+        public async Task<ActionResult<List<ItemDTO>>> Getitems()
         {
-            IQueryable<Item> items  = _context.items;
+            IQueryable<Item> _items = _context.Items; 
+          
+            var items = await _items.Include(x => x.Genre)
+                                            .Include(x => x.Reviews)
+                                            .OrderByDescending(x => x.Rating)
+                                            .Select(x => new Item() { 
+                                                Id = x.Id,
+                                                Name = x.Name, 
+                                                Picture = x.Picture,
+                                                OpeningDate = x.OpeningDate,
+                                                Reviews = x.Reviews,
+                                                Genre = x.Genre,
+                                                Description = x.Description,
+                                                GenreId = x.GenreId, 
+                                                Rating = x.Reviews.Count() != 0 ?(double)( x.Reviews.Sum(x => x.Rate) / x.Reviews.Count()) : 0.0 
+                                            }).ToListAsync();
 
-            if (!string.IsNullOrEmpty(queryParameter.sortBy))
-            {
-                if(typeof(Item).GetProperty(queryParameter.sortBy) != null)
-                {
-                    items = items.OrderByCustom(queryParameter.sortBy, queryParameter.SortOrder); 
-                }
-            }
-
-            if (!string.IsNullOrEmpty(queryParameter.Name))
-            {
-                items = items.Where(p => p.Name.ToLower().Contains(queryParameter.Name.ToLower())); 
-            }
-
-            return await items.Include(a => a.Reviews)
-                              .Include(a => a.Reviews)
-                                 .ThenInclude(a => a.Author)
-                              .Include( a => a.Category)
-                              .Select(x => GetItemToDTo(x)).ToListAsync(); 
+           
+            return _mapper.Map<List<ItemDTO>>(items); 
         }
 
-        [HttpGet( "[action]", Name = nameof(GetitemFromCategory))]
-        public async Task<ActionResult<IEnumerable<ItemDTo>>> GetitemFromCategory([FromQuery] UserQueryParameter queryParameter)
+        [HttpGet("[action]")]
+        public async Task<ActionResult<List<ItemDTO>>> Filter([FromQuery] FilterDTO filter)
         {
-            IQueryable<Item> items = _context.items;
+            var queryable = _context.Items.AsQueryable();
 
-            if (!string.IsNullOrEmpty(queryParameter.sortBy))
+            if (!String.IsNullOrWhiteSpace(filter.Name))
             {
-                if (typeof(Item).GetProperty(queryParameter.sortBy) != null)
-                {
-                    items = items.OrderByCustom(queryParameter.sortBy, queryParameter.SortOrder);
-                }
+                queryable = queryable.Where(x => x.Name.Contains(filter.Name)); 
             }
 
-            if (!string.IsNullOrEmpty(queryParameter.categoryId.ToString()))
-            {
-                items = items.Where(p => p.CategoryId.ToString().Contains(queryParameter.categoryId.ToString()));
-            }
+            var items = await queryable.Include(x => x.Genre)
+                                            .Include(x => x.Reviews)
+                                            .OrderByDescending(x => x.Rating)
+                                            .Select(x => new Item()
+                                            {
+                                                Id = x.Id,
+                                                Name = x.Name,
+                                                Picture = x.Picture,
+                                                OpeningDate = x.OpeningDate,
+                                                Reviews = x.Reviews,
+                                                Genre = x.Genre,
+                                                Description = x.Description,
+                                                GenreId = x.GenreId,
+                                                Rating = x.Reviews.Count() != 0 ? (double)(x.Reviews.Sum(x => x.Rate) / x.Reviews.Count()) : 0.0
+                                            }).ToListAsync();
 
-            return await items.Include(a => a.Reviews)
-                              .Include(a => a.Reviews)
-                                .ThenInclude(a => a.Author)
-                              .Include(a => a.Category)
-                              .Select(x => GetItemToDTo(x)).ToListAsync();
+            return _mapper.Map<List<ItemDTO>>(items); 
         }
 
         // GET: api/Items/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ItemDTo>> GetItem(int id)
+        public async Task<ActionResult<ItemDTO>> GetItem(int Id)
         {
-            IQueryable<Item> items = _context.items;
-
-            var item = await items.Include(a => a.Reviews).Include(a => a.Category).FirstOrDefaultAsync(x => x.Id == id);
-
+         
+           
+            var item = await _context.Items.Include(x => x.Genre)
+                                           .Include(x => x.Reviews)
+                                           .FirstOrDefaultAsync( x=> x.Id == Id) ;
+           
             if (item == null)
             {
                 return NotFound();
             }
 
-            return GetItemToDTo(item);
+            var itemDTO = _mapper.Map<ItemDTO>(item); 
+
+            return itemDTO;
         }
 
         // PUT: api/Items/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutItem(int id, ItemDTo item)
+        public async Task<IActionResult> PutItem(int Id, [FromForm] CreateItemDTO updateItem )
         {
-            if (id != item.Id)
-            {
-                return BadRequest();
-            }
+            var itemDB = await _context.Items.FirstOrDefaultAsync(x => x.Id == Id); 
 
-            var itemToUpdate = await _context.items.FindAsync(id); 
-
-            if(itemToUpdate == null)
+            if(itemDB == null)
             {
                 return NotFound(); 
             }
 
-            itemToUpdate.Name = item.Name;
-            itemToUpdate.Description = item.Description;
-            itemToUpdate.ImageUrl = item.ImageUrl; 
- 
+            itemDB = _mapper.Map(updateItem, itemDB);
 
-            try
+           
+
+            if( updateItem.Picture != null)
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ItemExists(id))
+                using (var memoryStream = new MemoryStream())
                 {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                    await updateItem.Picture.CopyToAsync(memoryStream);
+                    var content = memoryStream.ToArray();
+                    var extension = Path.GetExtension(updateItem.Picture.FileName);
+                    itemDB.Picture = await _storageService.EditFile(content, extension, containerName, itemDB.Picture, updateItem.Picture.ContentType);  
+                } 
             }
+
+            await _context.SaveChangesAsync();
+
 
             return NoContent();
         }
 
         // POST: api/Items
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<ItemDTo>> PostItem(ItemDTo itemDTo)
+        public async Task<ActionResult> PostItem( [FromForm] CreateItemDTO  createItem)
         {
-            var item = new Item
-            {
-                Name = itemDTo.Name,
-                Description = itemDTo.Description,
-                ImageUrl = itemDTo.ImageUrl,
-                CategoryId = itemDTo.CategoryId, 
-                ReleaseDate = itemDTo.ReleaseDate,         
-            }; 
+            var item = _mapper.Map<Item>(createItem); 
 
-            _context.items.Add(item);
+            if(createItem.Picture != null)
+            {
+                using(var memoryStream = new MemoryStream())
+                {
+                    await createItem.Picture.CopyToAsync(memoryStream);
+                    var content = memoryStream.ToArray();
+                    var extension = Path.GetExtension(createItem.Picture.FileName);
+                    item.Picture = await _storageService.SaveFile(content, extension, containerName, createItem.Picture.ContentType); 
+                }
+            }
+
+            _context.Add(item);
+
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetItem), new { id = item.Id }, ItemToDTo(item));
+            var itemDTO = _mapper.Map<ItemDTO>(item); 
+
+            return CreatedAtAction("GetItem", new { id = itemDTO.Id }, itemDTO);
         }
 
         // DELETE: api/Items/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteItem(int id)
+        public async Task<IActionResult> DeleteItem(int Id)
         {
-            var item = await _context.items.FindAsync(id);
-            if (item == null)
+            var exists =  _context.Items.AnyAsync(x => x.Id == Id); 
+
+            if (!await exists)
             {
                 return NotFound();
             }
 
-            _context.items.Remove(item);
+            _context.Remove( new Item() { Id = Id } );
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool ItemExists(int id)
-        {
-            return _context.items.Any(e => e.Id == id);
-        }
+     
 
-        private static ItemDTo ItemToDTo(Item item) => new ItemDTo 
-        
-        {
-            Id = item.Id, 
-            ReleaseDate = item.ReleaseDate, 
-            CategoryId = item.CategoryId, 
-            Description = item.Description, 
-            Name = item.Name, 
-            ImageUrl = item.ImageUrl, 
-            EntryDate = item.EntryDate, 
-            Category = item.Category, 
-            Reviews = item.Reviews, 
-        };
-
-        private static ItemDTo GetItemToDTo(Item item)
-        {
-            var Note = 0; 
-            if(item.Reviews.Count() != 0 ) Note = item.Reviews.Sum(u => u.ReviewNote ) / item.Reviews.Count(); 
-         
-
-            return new ItemDTo
-
-            {
-                Id = item.Id,
-                ReleaseDate = item.ReleaseDate,
-                CategoryId = item.CategoryId,
-                Description = item.Description,
-                Name = item.Name,
-                ImageUrl = item.ImageUrl,
-                EntryDate = item.EntryDate,
-                Category = item.Category,
-                Reviews = item.Reviews,
-                numberOfReviews = item.Reviews.Count(),
-                Note = Note
-            };
-        }
+       
     }
 }
