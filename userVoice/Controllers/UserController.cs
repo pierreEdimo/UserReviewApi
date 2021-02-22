@@ -46,9 +46,7 @@ namespace userVoice.Controllers
         public async Task<ActionResult<UserEntity>> GetUser()
         {
             var email = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
-            var user = await _userManager.Users.Include(a => a.getReviews)
-                                                  .ThenInclude(a => a.Author)
-                                               .SingleOrDefaultAsync(x => x.Email == email); 
+            var user = await _userManager.Users.SingleOrDefaultAsync(x => x.Email == email); 
       
             return user;
         }
@@ -58,9 +56,7 @@ namespace userVoice.Controllers
         {
             using (var Context = new DatabaseContext())
             {
-                return await _userManager.Users.Include(a => a.getReviews)
-                                                 .ThenInclude(a => a.Author)
-                                               .ToListAsync();
+                return await _userManager.Users.ToListAsync();
             }
         }
 
