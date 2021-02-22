@@ -19,29 +19,24 @@ namespace userVoice.DBContext
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Category>().HasMany(c => c.Items).WithOne(a => a.Category).HasForeignKey(a => a.CategoryId);
+            modelBuilder.Entity<Review>().HasKey(x => new { x.AuthorId, x.ItemId });
 
-            modelBuilder.Entity<Item>().HasOne(a => a.Category).WithMany(a => a.Items);
+            modelBuilder.Entity<Item>().HasOne(x => x.Genre).WithMany(x => x.Items).HasForeignKey(x => x.GenreId);
 
-            modelBuilder.Entity<Item>().HasMany(a => a.Reviews).WithOne(a => a.Item).HasForeignKey(a => a.ItemId);
+            modelBuilder.Entity<Item>().HasMany(x => x.Reviews).WithOne(x => x.Item).HasForeignKey( x => x.ItemId );
 
-            modelBuilder.Entity<UserEntity>().HasMany(a => a.getReviews).WithOne(a => a.Author);
+            modelBuilder.Entity<Review>().HasOne(x => x.Item).WithMany(x => x.Reviews).HasForeignKey(x => x.ItemId);
 
-            modelBuilder.Entity<Review>().HasKey( a => new { a.ItemId, a.AuthorId } ); 
-
-            modelBuilder.Entity<Review>().HasOne(a => a.Author).WithMany(a => a.getReviews).HasForeignKey(a => a.AuthorId);
-
-            modelBuilder.Entity<Review>().HasOne(a => a.Item).WithMany(a => a.Reviews).HasForeignKey(a => a.ItemId);
+            modelBuilder.Entity<Review>().HasOne(x => x.Author); 
 
             modelBuilder.Seed(); 
        
         }
 
 
-        public DbSet<Item> items { get; set; }
-        public DbSet<Category> categories { get; set;  }
-        public DbSet<Review> reviews { get; set;  }
-        public DbSet<SearchWord> searchWords { get; set;  }
-      
+        public DbSet<Item> Items { get; set; }
+        public DbSet<Genre> Genres { get; set;  }
+        public DbSet<Review> Reviews { get; set;  }
+       
     }
 }
