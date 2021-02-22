@@ -1,30 +1,28 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using userVoice.Model;
-using userVoice.OnlyDate;
+using Newtonsoft.Json;
+using userVoice.Helper;
+using userVoice.Model; 
 
 namespace userVoice.DTo
 {
-    public class ItemDTo
+    public class ItemDTO
     {
+        public int Id { get; set;  }
+        public String Name { get; set;  }
+        public String Picture { get; set;  }
+        [JsonConverter( typeof(DateConverter) )]
+        public DateTime OpeningDate { get; set; }
+        public String Description { get; set;  }
+        public GenreDTO Genre { get; set;  }
 
-        [Key]
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string ImageUrl { get; set; }
-        [JsonConverter(typeof(OnlyDateConverter))]
-        public DateTime EntryDate { get; set; } = DateTime.Now;
-        public int CategoryId { get; set; }
-        public virtual Category Category { get; set;  }
-        [JsonConverter(typeof(OnlyDateConverter))]
-        public DateTime ReleaseDate { get; set; }
-        public virtual List<Review> Reviews { get; set; }
-        public int numberOfReviews { get; set;  }
-        public int Note{get; set; }
+        public double Rating { get; set; }
+        public List<Review> Reviews { get; set; }
+
+
+
+
     }
 }
