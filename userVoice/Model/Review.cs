@@ -1,24 +1,27 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.ComponentModel.DataAnnotations;
+using userVoice.Helper; 
+
 using System.Threading.Tasks;
-using userVoice.OnlyDate;
 
 namespace userVoice.Model
 {
     public class Review
     {
-    
-        public string AuthorId { get; set;  }
-        public virtual UserEntity Author { get; set;  }
+
+        public double Rate { get; set;  }
+        public String Content { get; set;  }
+        [JsonIgnore]
+        public String AuthorId { get; set;  }
+        public UserEntity Author { get; set;  }
+        [JsonIgnore]
         public int ItemId { get; set;  }
-        public virtual Item Item { get; set;  }
-        public string Body { get; set;  }
-        [JsonConverter(typeof(OnlyDateConverter))]
-        public DateTime EntryDate { get; set; } = DateTime.Now; 
-        public int ReviewNote{get; set; }
-       
+        [JsonIgnore]
+        public Item Item { get; set;  }
+        [JsonConverter(typeof(DateConverter))]
+        public DateTime CreatedAt { get; set; } = DateTime.Now; 
+      
     }
 }
