@@ -37,6 +37,7 @@ namespace userVoice.DBContext
         public DbSet<Item> Items { get; set; }
         public DbSet<Genre> Genres { get; set;  }
         public DbSet<Review> Reviews { get; set;  }
+        public DbSet<SearchWord> SearchWords { get; set;  }
        
     }
 }
