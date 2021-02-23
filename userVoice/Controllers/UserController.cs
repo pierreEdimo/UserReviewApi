@@ -15,6 +15,7 @@ using userVoice.DBContext;
 using userVoice.DTo;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using AutoMapper; 
 
 namespace userVoice.Controllers
 {
@@ -26,44 +27,48 @@ namespace userVoice.Controllers
         private readonly IConfiguration _configuration;
         private readonly UserManager<UserEntity> _userManager;
         private readonly SignInManager<UserEntity> _signInManager;
-        private readonly DatabaseContext _context; 
+        private readonly IMapper _mapper; 
 
         public UserController(UserManager<UserEntity> userManager, 
                               SignInManager<UserEntity> signInManager, 
                               IConfiguration configuration, 
-                              DatabaseContext context
+                              IMapper mapper
+                           
             )
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
-            _context = context;
+            _mapper = mapper; 
 
-            _context.Database.EnsureCreated(); 
+            
         }
 
         [HttpGet]
-        public async Task<ActionResult<UserEntity>> GetUser()
+        public async Task<ActionResult<UserDTO>> GetUser()
         {
             var email = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
-            var user = await _userManager.Users.SingleOrDefaultAsync(x => x.Email == email); 
-      
-            return user;
+
+            var user = await _userManager.Users.SingleOrDefaultAsync(x => x.Email == email);
+
+            return _mapper.Map<UserDTO>(user) ;
         }
 
         [HttpGet(Name = nameof(GetAllUsers) ) ]
-        public async Task<List<UserEntity>> GetAllUsers()
+        public async Task<List<UserDTO>> GetAllUsers()
         {
             using (var Context = new DatabaseContext())
             {
-                return await _userManager.Users.ToListAsync();
+                var users = await _userManager.Users.ToListAsync();
+
+                return _mapper.Map<List<UserDTO>>(users); 
             }
         }
 
 
         [AllowAnonymous]
         [HttpPost]
-        public async Task<object> Register( [FromBody] RegisterDTo model )
+        public async Task<object> Register( [FromBody] RegisterInfo model )
         {
             var user = new UserEntity
             {
@@ -81,11 +86,12 @@ namespace userVoice.Controllers
                 return GenerateJwtToken(model.Email, user); 
             }
 
-            throw new ApplicationException("UNKNOWN_ERROR"); 
+            return BadRequest(result.Errors); 
         }
 
         [AllowAnonymous]
-        public async Task<object> Login([FromBody] LoginDTo modelLogin)
+        [HttpPost]
+        public async Task<object> Login([FromBody] LoginInfo modelLogin)
         {
             var user = await _userManager.FindByEmailAsync(modelLogin.Email); 
 
@@ -114,14 +120,14 @@ namespace userVoice.Controllers
                 new Claim(JwtRegisteredClaimNames.NameId, user.Id)
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtKey"]));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["jwt:key"]));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
            
 
             var token = new JwtSecurityToken(
-                 _configuration["JwtIssuer"],
-                 _configuration["JwtIssuer"],
-                 claims,
+                 issuer: null, 
+                 audience:null,
+                 claims:claims,
                  signingCredentials: credentials
                  );
 
