@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using userVoice.Services;
+using Microsoft.OpenApi.Models; 
 
 
 
@@ -74,17 +75,35 @@ namespace userVoice
                      config.SaveToken = true;
                      config.TokenValidationParameters = new TokenValidationParameters
                      {
-                         ValidateIssuer = true,
-                         ValidateAudience = true,
+                         ValidateIssuer = false,
+                         ValidateAudience = false,
                          ValidateIssuerSigningKey = true,
                          RequireExpirationTime = false,
-                         ValidIssuer = Configuration["JwtIssuer"],
-                         ValidAudience = Configuration["JwtIssuer"],
-                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtKey"])),
+                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["jwt:key"])),
                          ClockSkew = TimeSpan.Zero
 
                      }; 
-                 }); 
+                 });
+
+            services.AddSwaggerGen( config =>
+            {
+                config.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1", 
+                    Title = "UserVoice", 
+                    Description = " A user centered review Aggregator", 
+                    License = new OpenApiLicense()
+                    {
+                        Name = "MIT"
+                    }, 
+                    Contact = new OpenApiContact()
+                    {
+                        Name = "Pierre Edimo",
+                        Email = "pierredimo@live.com"
+                    }
+                }); 
+            }
+                ); 
 
             
             services.AddCors(options => options.AddPolicy("EnableAll", builder =>
@@ -94,24 +113,7 @@ namespace userVoice
                        .AllowAnyMethod();
             }));
 
-            services.AddSwaggerDocument( config => {
-                config.PostProcess = document =>
-                {
-                    document.Info.Version = "v1";
-                    document.Info.Title = "UserReviewApi";
-                    document.Info.Description = "a user centered review-aggregator"; 
-                    document.Info.TermsOfService = "None";
-                    document.Info.Contact = new NSwag.OpenApiContact
-                    {
-                        Name = "Pierre Edimo",
-                        Email = "pierreedimo@live.com"
-                    };
-                    document.Info.License = new NSwag.OpenApiLicense
-                    {
-                        Name = "MIT"
-                    }; 
-                }; 
-            }); 
+      
 
          
 
@@ -124,7 +126,13 @@ namespace userVoice
            
             context.Database.EnsureCreated();
 
-           
+            app.UseSwagger();
+
+            app.UseSwaggerUI( config =>
+            {
+                config.SwaggerEndpoint("/swagger/v1/swagger.json", "userReview"); 
+            }
+                ); 
 
             if (env.IsDevelopment())
             {
@@ -136,10 +144,6 @@ namespace userVoice
             app.UseHttpsRedirection();
 
             app.UseStaticFiles();
-
-            app.UseOpenApi();
-
-            app.UseSwaggerUi3(); 
 
             app.UseRouting();
 
