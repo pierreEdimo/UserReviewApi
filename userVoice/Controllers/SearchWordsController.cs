@@ -8,10 +8,12 @@ using Microsoft.EntityFrameworkCore;
 using userVoice.DBContext;
 using userVoice.Model;
 using AutoMapper;
-using userVoice.DTo; 
+using userVoice.DTo;
+using Microsoft.AspNetCore.Authorization;
 
 namespace userVoice.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class SearchWordsController : ControllerBase
@@ -30,7 +32,23 @@ namespace userVoice.Controllers
         [HttpGet]
         public async Task<ActionResult<List<SearchWordDTO>>> GetSearchWords()
         {
-            var words = await _context.SearchWords.ToListAsync();
+            var words = await _context.SearchWords.OrderByDescending(x => x.Id).ToListAsync();
+
+            return _mapper.Map<List<SearchWordDTO>>(words); 
+        }
+
+
+        [HttpGet("[action]")]
+        public async Task<ActionResult<List<SearchWordDTO>>> Filter([FromQuery] FilterSearchWord filter)
+        {
+            var queryable = _context.SearchWords.AsQueryable();
+
+            if (!String.IsNullOrWhiteSpace(filter.UserId))
+            {
+                queryable = queryable.Where(x => x.UserId.Contains(filter.UserId)); 
+            }
+
+            var words = await queryable.OrderByDescending(x => x.Id).ToListAsync();
 
             return _mapper.Map<List<SearchWordDTO>>(words); 
         }

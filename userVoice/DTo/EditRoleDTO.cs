@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace userVoice.DTo
 {
-    public class AddSearchWord
+    public class EditRoleDTO
     {
         [Required]
-        public String UserId { get; set; }
+        public String UserId { get; set;  }
         [Required]
-        public String Word { get; set; }
+        public String RoleName { get; set;  }
     }
 }

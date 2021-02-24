@@ -10,12 +10,15 @@ namespace userVoice.Model
 {
     public class Review
     {
-
+        [Required]
         public double Rate { get; set;  }
+        [Required]
         public String Content { get; set;  }
+        [Required]
         [JsonIgnore]
         public String AuthorId { get; set;  }
         public UserEntity Author { get; set;  }
+        [Required]
         [JsonIgnore]
         public int ItemId { get; set;  }
         [JsonIgnore]

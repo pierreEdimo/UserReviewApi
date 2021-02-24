@@ -11,7 +11,10 @@ namespace userVoice.Model
     {
        [Key]
         public int Id { get; set;  }
+        [Required]
+        [StringLength(80)]
         public String Name { get; set;  }
+        [Required]
         public String Picture { get; set;  }
         [JsonIgnore]
         public List<Item> Items { get; set;  }

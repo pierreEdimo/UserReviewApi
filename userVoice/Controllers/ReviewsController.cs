@@ -8,10 +8,12 @@ using Microsoft.EntityFrameworkCore;
 using userVoice.DBContext;
 using userVoice.Model;
 using AutoMapper;
-using userVoice.DTo; 
+using userVoice.DTo;
+using Microsoft.AspNetCore.Authorization;
 
 namespace userVoice.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ReviewsController : ControllerBase
@@ -56,7 +58,7 @@ namespace userVoice.Controllers
         }
 
         [HttpGet("Filter")]
-        public async Task<ActionResult<List<ReviewDTO>>> FilterReviews([FromQuery] FilterDTO filter)
+        public async Task<ActionResult<List<ReviewDTO>>> FilterReviews([FromQuery] FilterReviewDTO filter)
         {
             var queryable = _context.Reviews.AsQueryable();
 

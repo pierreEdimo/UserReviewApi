@@ -11,9 +11,11 @@ using AutoMapper;
 using userVoice.Services;
 using userVoice.DTo;
 using System.IO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace userVoice.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class GenresController : ControllerBase
@@ -57,6 +59,7 @@ namespace userVoice.Controllers
             return genreDTO;
         }
 
+        [Authorize(Roles = "Admin")]
         // PUT: api/Genres/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -89,6 +92,7 @@ namespace userVoice.Controllers
 
         // POST: api/Genres
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<ActionResult> PostGenre( [FromForm]  CreateGenreDTO createGenre)
         {
@@ -114,6 +118,7 @@ namespace userVoice.Controllers
             return CreatedAtAction("GetGenre", new { id = genreDTO.Id }, genreDTO);
         }
 
+        [Authorize(Roles = "Admin")]
         // DELETE: api/Genres/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGenre(int Id)

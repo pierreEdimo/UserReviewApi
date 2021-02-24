@@ -15,7 +15,8 @@ using userVoice.DBContext;
 using userVoice.DTo;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
-using AutoMapper; 
+using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace userVoice.Controllers
 {
@@ -27,11 +28,13 @@ namespace userVoice.Controllers
         private readonly IConfiguration _configuration;
         private readonly UserManager<UserEntity> _userManager;
         private readonly SignInManager<UserEntity> _signInManager;
-        private readonly IMapper _mapper; 
+        private readonly IMapper _mapper;
+        private readonly DatabaseContext _context; 
 
         public UserController(UserManager<UserEntity> userManager, 
                               SignInManager<UserEntity> signInManager, 
                               IConfiguration configuration, 
+                              DatabaseContext context,
                               IMapper mapper
                            
             )
@@ -39,7 +42,8 @@ namespace userVoice.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
-            _mapper = mapper; 
+            _mapper = mapper;
+            _context = context; 
 
             
         }
@@ -54,6 +58,7 @@ namespace userVoice.Controllers
             return _mapper.Map<UserDTO>(user) ;
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme , Roles = "Admin" )]
         [HttpGet(Name = nameof(GetAllUsers) ) ]
         public async Task<List<UserDTO>> GetAllUsers()
         {
@@ -111,7 +116,7 @@ namespace userVoice.Controllers
         }
         
 
-      
+        
         private object GenerateJwtToken(string email, UserEntity user)
         {
             var claims = new List<Claim> {
@@ -133,6 +138,44 @@ namespace userVoice.Controllers
 
             return new JwtSecurityTokenHandler().WriteToken(token);
 
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        [HttpGet("[action]")]
+        public async Task<ActionResult<List<String>>> GetRoles()
+        {
+            return await _context.Roles.Select(x => x.Name).ToListAsync();
+        }
+
+        [HttpPost("[action]")]
+        public async Task<ActionResult> AssignRole(EditRoleDTO editRole)
+        {
+            var user = await _userManager.FindByIdAsync(editRole.UserId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, editRole.RoleName));
+
+            return NoContent();
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        [HttpPost("[action]")]
+        public async Task<ActionResult> RemoveRole(EditRoleDTO editRole)
+        {
+            var user = await _userManager.FindByIdAsync(editRole.UserId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            await _userManager.RemoveClaimAsync(user, new Claim(ClaimTypes.Role, editRole.RoleName));
+
+            return NoContent();
         }
 
 

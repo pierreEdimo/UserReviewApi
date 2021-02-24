@@ -25,7 +25,6 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\" />
-    <Folder Include="validation\" />
     <Folder Include="wwwroot\Items\" />
   </ItemGroup>
 

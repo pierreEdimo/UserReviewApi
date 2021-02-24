@@ -10,10 +10,12 @@ using userVoice.Model;
 using AutoMapper;
 using userVoice.DTo;
 using System.IO;
-using userVoice.Services; 
+using userVoice.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace userVoice.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ItemsController : ControllerBase
@@ -33,6 +35,7 @@ namespace userVoice.Controllers
 
         }
 
+        [AllowAnonymous]
         // GET: api/Items
         [HttpGet]
         public async Task<ActionResult<List<ItemDTO>>> Getitems()
@@ -41,6 +44,7 @@ namespace userVoice.Controllers
           
             var items = await _items.Include(x => x.Genre)
                                             .Include(x => x.Reviews)
+                                               .ThenInclude(x => x.Author )
                                             .OrderByDescending(x => x.Rating)
                                             .Select(x => new Item() { 
                                                 Id = x.Id,
@@ -59,7 +63,7 @@ namespace userVoice.Controllers
         }
 
         [HttpGet("[action]")]
-        public async Task<ActionResult<List<ItemDTO>>> Filter([FromQuery] FilterDTO filter)
+        public async Task<ActionResult<List<ItemDTO>>> Filter([FromQuery] FilterItemDTO filter)
         {
             var queryable = _context.Items.AsQueryable();
 
@@ -70,6 +74,7 @@ namespace userVoice.Controllers
 
             var items = await queryable.Include(x => x.Genre)
                                             .Include(x => x.Reviews)
+                                               .ThenInclude(x => x.Author)
                                             .OrderByDescending(x => x.Rating)
                                             .Select(x => new Item()
                                             {
@@ -95,6 +100,7 @@ namespace userVoice.Controllers
            
             var item = await _context.Items.Include(x => x.Genre)
                                            .Include(x => x.Reviews)
+                                              .ThenInclude(x => x.Author)
                                            .FirstOrDefaultAsync( x=> x.Id == Id) ;
            
             if (item == null)
@@ -107,6 +113,7 @@ namespace userVoice.Controllers
             return itemDTO;
         }
 
+        [Authorize(Roles = "Admin")]
         // PUT: api/Items/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -140,6 +147,7 @@ namespace userVoice.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "Admin")]
         // POST: api/Items
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
@@ -167,6 +175,7 @@ namespace userVoice.Controllers
             return CreatedAtAction("GetItem", new { id = itemDTO.Id }, itemDTO);
         }
 
+        [Authorize(Roles = "Admin")]
         // DELETE: api/Items/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteItem(int Id)

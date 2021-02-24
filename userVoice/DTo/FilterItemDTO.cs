@@ -5,10 +5,9 @@ using System.Threading.Tasks;
 
 namespace userVoice.DTo
 {
-    public class FilterDTO
+    public class FilterItemDTO
     {
         public String Name { get; set;  }
-        public String AuthorId { get; set;  }
-        public int ItemId { get; set;  }
+       
     }
 }
