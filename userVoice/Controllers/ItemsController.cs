@@ -45,7 +45,6 @@ namespace userVoice.Controllers
             var items = await _items.Include(x => x.Genre)
                                             .Include(x => x.Reviews)
                                                .ThenInclude(x => x.Author )
-                                            .OrderByDescending(x => x.Rating)
                                             .Select(x => new Item() { 
                                                 Id = x.Id,
                                                 Name = x.Name, 
@@ -72,10 +71,20 @@ namespace userVoice.Controllers
                 queryable = queryable.Where(x => x.Name.Contains(filter.Name)); 
             }
 
+            if (!String.IsNullOrWhiteSpace(filter.sortBy))
+            {
+                if (typeof(Item).GetProperty(filter.sortBy) != null)
+                {
+                    queryable = queryable.OrderByCustom(filter.sortBy, filter.SortOrder);
+                }
+            }
+
+            queryable = queryable.Take(filter.Size); 
+
+
             var items = await queryable.Include(x => x.Genre)
                                             .Include(x => x.Reviews)
                                                .ThenInclude(x => x.Author)
-                                            .OrderByDescending(x => x.Rating)
                                             .Select(x => new Item()
                                             {
                                                 Id = x.Id,

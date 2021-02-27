@@ -32,7 +32,7 @@ namespace userVoice.Controllers
         [HttpGet]
         public async Task<ActionResult<List<ReviewDTO>>> GetReviews()
         {
-          var reviews = await _context.Reviews.OrderByDescending( x => x.ItemId)
+          var reviews = await _context.Reviews
                                               .Include(x => x.Author)
                                               .ToListAsync();
 
@@ -43,7 +43,7 @@ namespace userVoice.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ReviewDTO>> GetReview(string Id)
         {
-            var review = await _context.Reviews.OrderByDescending(x => x.ItemId)
+            var review = await _context.Reviews
                                                .Include(x => x.Author)
                                                .FirstOrDefaultAsync( x => x.AuthorId == Id );
 
@@ -72,8 +72,15 @@ namespace userVoice.Controllers
                 queryable = queryable.Where(x => x.ItemId.ToString().Contains(filter.ItemId.ToString())); 
             }
 
+            if (!String.IsNullOrWhiteSpace(filter.sortBy))
+            {
+                if(typeof(Review).GetProperty(filter.sortBy) != null)
+                {
+                    queryable = queryable.OrderByCustom(filter.sortBy, filter.SortOrder); 
+                }
+            }
+
             var items = await queryable.Include(x => x.Author)
-                                       .OrderByDescending(x => x.ItemId)
                                        .ToListAsync();
 
             return _mapper.Map<List<ReviewDTO>>(items); 

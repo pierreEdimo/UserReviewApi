@@ -48,7 +48,16 @@ namespace userVoice.Controllers
                 queryable = queryable.Where(x => x.UserId.Contains(filter.UserId)); 
             }
 
-            var words = await queryable.OrderByDescending(x => x.Id).ToListAsync();
+            if (!String.IsNullOrWhiteSpace(filter.sortBy))
+            {
+                if (typeof(SearchWord).GetProperty(filter.sortBy) != null)
+                {
+                    queryable = queryable.OrderByCustom(filter.sortBy, filter.SortOrder);
+                }
+            }
+
+
+            var words = await queryable.ToListAsync();
 
             return _mapper.Map<List<SearchWordDTO>>(words); 
         }

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace userVoice.DTo
 {
-    public class FilterSearchWord
+    public class FilterSearchWord : FilterDTO
     {
         public String UserId { get; set;  }
     }
