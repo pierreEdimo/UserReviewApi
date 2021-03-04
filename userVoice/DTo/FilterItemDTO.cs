@@ -8,6 +8,7 @@ namespace userVoice.DTo
     public class FilterItemDTO : FilterDTO
     {
         public String Name { get; set;  }
+        public int GenreId { get; set;  }
        
     }
 }

@@ -20,9 +20,5 @@ namespace userVoice.DTo
 
         public double Rating { get; set; }
         public List<Review> Reviews { get; set; }
-
-
-
-
     }
 }

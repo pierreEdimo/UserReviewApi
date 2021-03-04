@@ -79,6 +79,11 @@ namespace userVoice.Controllers
                 }
             }
 
+            if(filter.GenreId != 0)
+            {
+                queryable = queryable.Where(x => x.GenreId == filter.GenreId); 
+            }
+
             queryable = queryable.Take(filter.Size); 
 
 
