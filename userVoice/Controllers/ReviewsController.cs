@@ -69,7 +69,7 @@ namespace userVoice.Controllers
 
             if(filter.ItemId != 0)
             {
-                queryable = queryable.Where(x => x.ItemId.ToString().Contains(filter.ItemId.ToString())); 
+                queryable = queryable.Where(x => x.ItemId == filter.ItemId ); 
             }
 
             if (!String.IsNullOrWhiteSpace(filter.sortBy))
