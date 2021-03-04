@@ -116,6 +116,8 @@ namespace userVoice.Controllers
                                            .Include(x => x.Reviews)
                                               .ThenInclude(x => x.Author)
                                            .FirstOrDefaultAsync( x=> x.Id == Id) ;
+
+            item.Rating = item.Reviews.Count() != 0 ? (double)(item.Reviews.Sum(x => x.Rate) / item.Reviews.Count()) : 0.0 ; 
            
             if (item == null)
             {
