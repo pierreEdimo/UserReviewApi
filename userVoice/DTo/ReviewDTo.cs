@@ -15,7 +15,7 @@ namespace userVoice.DTo
         public String Content { get; set;  }
         [JsonIgnore]
         public ItemDTO Item { get; set;  }
-        public UserEntity Author { get; set;  }
+        public UserDTO Author { get; set;  }
         [JsonConverter(typeof(DateConverter) )]
         public DateTime CreatedAt { get; set; } = DateTime.Now; 
     }
