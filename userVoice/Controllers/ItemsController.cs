@@ -68,7 +68,7 @@ namespace userVoice.Controllers
 
             if (!String.IsNullOrWhiteSpace(filter.Name))
             {
-                queryable = queryable.Where(x => x.Name.Contains(filter.Name)); 
+                queryable = queryable.Where(x => x.Name.ToLower().Contains(filter.Name.ToLower())); 
             }
 
             if (!String.IsNullOrWhiteSpace(filter.sortBy))
