@@ -139,14 +139,14 @@ namespace userVoice.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteReview(string Id)
         {
-            var exists = _context.Reviews.AnyAsync(x => x.AuthorId == Id); 
+            var review = await _context.Reviews.FirstOrDefaultAsync(x => x.AuthorId == Id); 
 
-            if( !await exists)
+            if( review == null)
             {
                 return NotFound(); 
             }
 
-            _context.Remove(new Review() { AuthorId = Id });
+            _context.Reviews.Remove(review); 
 
             await _context.SaveChangesAsync(); 
 

@@ -11,7 +11,7 @@ namespace userVoice.DTo
     public class ReviewDTO
     {
         public String AuthorId { get; set;  }
-        public int Rate { get; set;  }
+        public double Rate { get; set;  }
         public String Content { get; set;  }
         [JsonIgnore]
         public ItemDTO Item { get; set;  }

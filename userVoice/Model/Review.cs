@@ -11,7 +11,7 @@ namespace userVoice.Model
     public class Review
     {
         [Required]
-        public int Rate { get; set;  }
+        public double Rate { get; set;  }
         [Required]
         public String Content { get; set;  }
         [Required]
