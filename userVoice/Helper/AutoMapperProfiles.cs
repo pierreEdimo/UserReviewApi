@@ -26,9 +26,6 @@ namespace userVoice.Helper
 
             CreateMap<AddReviewDTO, Review>();
 
-            CreateMap<SearchWord, SearchWordDTO>().ReverseMap();
-
-            CreateMap<AddSearchWord, SearchWord>();
 
             CreateMap<UserEntity, UserDTO>()
                 .ForMember(x => x.Email, options => options.MapFrom(x => x.Email))
