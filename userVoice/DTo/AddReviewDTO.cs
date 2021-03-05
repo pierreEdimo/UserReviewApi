@@ -17,7 +17,7 @@ namespace userVoice.DTo
         [ModelBinder(BinderType = typeof(TypeBinder<String>))]
         public String AuthorId { get; set;  }
         [Required]
-        public double Rate { get; set; }
+        public int Rate { get; set; }
         [Required]
         public String Content { get; set; }
     }
