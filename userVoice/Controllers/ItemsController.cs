@@ -54,7 +54,7 @@ namespace userVoice.Controllers
                                                 Genre = x.Genre,
                                                 Description = x.Description,
                                                 GenreId = x.GenreId, 
-                                                Rating = x.Reviews.Count() != 0 ?(double)( x.Reviews.Sum(x => x.Rate) / x.Reviews.Count()) : 0.0 
+                                                Rating = x.Reviews.Count() != 0 ? Math.Round((double)(x.Reviews.Sum(x => x.Rate) / x.Reviews.Count()),1): 0.0 
                                             }).ToListAsync();
 
            
@@ -100,7 +100,7 @@ namespace userVoice.Controllers
                                                 Genre = x.Genre,
                                                 Description = x.Description,
                                                 GenreId = x.GenreId,
-                                                Rating = x.Reviews.Count() != 0 ? (double)(x.Reviews.Sum(x => x.Rate) / x.Reviews.Count()) : 0.0
+                                                Rating = x.Reviews.Count() != 0 ? Math.Round((double)(x.Reviews.Sum(x => x.Rate) / x.Reviews.Count()), 1) : 0.0
                                             }).ToListAsync();
 
             return _mapper.Map<List<ItemDTO>>(items); 
@@ -117,7 +117,7 @@ namespace userVoice.Controllers
                                               .ThenInclude(x => x.Author)
                                            .FirstOrDefaultAsync( x=> x.Id == Id) ;
 
-            item.Rating = item.Reviews.Count() != 0 ? (double)(item.Reviews.Sum(x => x.Rate) / item.Reviews.Count()) : 0.0 ; 
+            item.Rating = item.Reviews.Count() != 0 ? Math.Round((double)(item.Reviews.Sum(x => x.Rate) / item.Reviews.Count()),1) : 0.0 ; 
            
             if (item == null)
             {
