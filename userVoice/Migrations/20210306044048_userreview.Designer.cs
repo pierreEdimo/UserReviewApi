@@ -9,8 +9,8 @@ using userVoice.DBContext;
 namespace userVoice.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20210224094006_Add.Migraton Adminrole")]
-    partial class AddMigratonAdminrole
+    [Migration("20210306044048_userreview")]
+    partial class userreview
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -153,9 +153,12 @@ namespace userVoice.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(80)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Picture")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -196,18 +199,22 @@ namespace userVoice.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("GenreId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(80)
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("OpeningDate")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Picture")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<double>("Rating")
@@ -254,43 +261,34 @@ namespace userVoice.Migrations
 
             modelBuilder.Entity("userVoice.Model.Review", b =>
                 {
-                    b.Property<string>("AuthorId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("ItemId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("AuthorId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Content")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("ItemId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<double>("Rate")
                         .HasColumnType("REAL");
 
-                    b.HasKey("AuthorId", "ItemId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
 
                     b.HasIndex("ItemId");
 
                     b.ToTable("Reviews");
-                });
-
-            modelBuilder.Entity("userVoice.Model.SearchWord", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Word")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SearchWords");
                 });
 
             modelBuilder.Entity("userVoice.Model.UserEntity", b =>

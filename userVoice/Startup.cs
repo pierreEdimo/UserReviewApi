@@ -40,7 +40,7 @@ namespace userVoice
            
 
             services.AddDbContext<DatabaseContext>(opt =>
-               opt.UseSqlite("Data Source=UserReviewDb"));
+               opt.UseSqlite("Data Source=Userreview"));
 
             services.AddTransient<IFileStorageService, InAppStorageService>();
 
