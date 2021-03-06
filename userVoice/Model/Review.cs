@@ -10,6 +10,8 @@ namespace userVoice.Model
 {
     public class Review
     {
+        [Key]
+        public int Id { get; set;  }
         [Required]
         public double Rate { get; set;  }
         [Required]
@@ -21,10 +23,10 @@ namespace userVoice.Model
         [Required]
         [JsonIgnore]
         public int ItemId { get; set;  }
-        [JsonIgnore]
-        public Item Item { get; set;  }
         [JsonConverter(typeof(DateConverter))]
         public DateTime CreatedAt { get; set; } = DateTime.Now; 
+        [JsonIgnore]
+        public Item Item { get; set;  }
       
     }
 }

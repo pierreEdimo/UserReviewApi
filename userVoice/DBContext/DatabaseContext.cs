@@ -19,8 +19,6 @@ namespace userVoice.DBContext
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Review>().HasKey(x => new { x.AuthorId, x.ItemId });
-
             modelBuilder.Entity<Item>().HasOne(x => x.Genre).WithMany(x => x.Items).HasForeignKey(x => x.GenreId);
 
             modelBuilder.Entity<Item>().HasMany(x => x.Reviews).WithOne(x => x.Item).HasForeignKey( x => x.ItemId );
