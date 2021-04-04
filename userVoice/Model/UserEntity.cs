@@ -8,8 +8,8 @@ namespace userVoice.Model
 {
     public class UserEntity : IdentityUser
     {
-    
-
+ 
+       
 
     }
 }

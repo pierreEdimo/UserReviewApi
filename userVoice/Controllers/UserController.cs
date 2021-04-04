@@ -70,6 +70,30 @@ namespace userVoice.Controllers
             }
         }
 
+        public async Task<object> updateEmail([FromBody] UpdateEmailDTO emailDTO)
+        {
+            var email = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
+
+            var user = await _userManager.FindByEmailAsync(email); 
+
+            if(user == null)
+            {
+                return NotFound(); 
+            }
+
+            user.Email = emailDTO.Email;
+
+            var result = await _userManager.UpdateAsync(user);
+
+            if (result.Succeeded)
+            {
+                var loggedUser = await _userManager.FindByEmailAsync(emailDTO.Email);
+
+                return GenerateJwtToken(loggedUser.Email, loggedUser); 
+            }
+
+            return BadRequest(result.Errors);
+        }
 
         [AllowAnonymous]
         [HttpPost]
