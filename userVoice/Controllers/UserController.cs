@@ -70,6 +70,7 @@ namespace userVoice.Controllers
             }
         }
 
+        [HttpPost]
         public async Task<object> updateEmail([FromBody] UpdateEmailDTO emailDTO)
         {
             var email = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
